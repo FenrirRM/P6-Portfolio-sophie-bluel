@@ -51,8 +51,6 @@ async function displayWorks (categorieId) {
     } catch (error) {
         console.log ("Erreur lors de l'affichage des projets")
     }
-
-
 };
 
 // Boutons filtres par catégories
@@ -81,6 +79,5 @@ async function btnfilters () {
             displayWorks (categorieId);
         })
     })
-
 }
 
