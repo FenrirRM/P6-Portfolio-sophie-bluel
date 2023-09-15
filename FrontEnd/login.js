@@ -2,7 +2,7 @@ const form = document.getElementById('formLogin');
 const formErr = document.getElementById('formError')
 
 // Ajout d'un event sur la soumission du formulaire
-form.addEventListener('submit', async (event) => {
+form.addEventListener('submit',  (event) => {
   event.preventDefault(); // Empêche le rechargement de la page
 
   // Récupération des valeurs des champs email et mot de passe du formulaire
@@ -10,27 +10,32 @@ form.addEventListener('submit', async (event) => {
   const password = document.getElementById('password').value.trim();
 
   // Envoi à l'API pour authentification
-  const response = await fetch("http://localhost:5678/api/users/login", {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json" 
-    },
-    body: JSON.stringify({ email, password }) 
-  });
+  fetch("http://localhost:5678/api/users/login", {
+  method: 'POST',
+  headers: {
+    "Content-Type": "application/json" 
+  },
+  body: JSON.stringify({ email, password }) 
+})
 
-  if (response.ok) {
-    const data = await response.json();
+  
 
-    // Stockage du jeton d'authentification dans le stockage de session
-    sessionStorage.setItem("token", data.token);   
+  .then(response =>{
+    if (response.ok) {
+      return response.json();
+    }
 
-    // Redirection de l'utilisateur vers la page d'accueil
-    window.location.href = "index.html";
-    
-  } else {
+  }) 
+  
+  .then(data => {
+    sessionStorage.setItem("token", data.token);
+    window.location.href = "index.html";   
+    })
+  
+  .catch(error => {
     formErr.innerText = 'le mot de passe ou l’email est incorrecte'
     formErr.classList.add('errorMessage')
     
-  }
+  })
 
 });

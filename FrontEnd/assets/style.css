@@ -106,6 +106,12 @@ nav li {
 li:hover {
 	color: #B1663C;
 }
+
+#logout {
+	cursor: pointer;
+	display: none;
+}
+
 #introduction {
 	display: flex;
 	align-items: center;
@@ -242,3 +248,6 @@ footer nav ul {
 	padding-right: 5%;
 }
 
+.editBar{
+	
+}

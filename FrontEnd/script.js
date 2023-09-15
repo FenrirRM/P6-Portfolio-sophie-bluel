@@ -81,3 +81,24 @@ async function btnfilters () {
     })
 }
 
+// Partie Admin connecté
+
+const AdminToken = sessionStorage.getItem("token")
+const connect = document.getElementById('login')
+const disconnect = document.getElementById('logout')
+
+function logout() {
+    if (AdminToken) {
+        connect.style.display ="none"
+        disconnect.style.display="block"
+
+        disconnect.addEventListener("click", (e) =>{
+            e.preventDefault()
+            sessionStorage.removeItem("token");
+            window.location.href = "index.html";
+        })
+
+    }
+}
+
+logout()
