@@ -59,7 +59,7 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
-	background-color: #FFFEF8;
+	background-color: #FFFEF8
 }
 header {
 	display: flex;
@@ -107,10 +107,6 @@ li:hover {
 	color: #B1663C;
 }
 
-#logout {
-	cursor: pointer;
-	display: none;
-}
 
 #introduction {
 	display: flex;
@@ -248,6 +244,14 @@ footer nav ul {
 	padding-right: 5%;
 }
 
-.editBar{
-	
+.blackBanner{
+	background-color: black;
+	height: 59px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	font-size: 16px;
+	gap: 7px;
 }

@@ -85,20 +85,30 @@ async function btnfilters () {
 
 const AdminToken = sessionStorage.getItem("token")
 const connect = document.getElementById('login')
-const disconnect = document.getElementById('logout')
 
-function logout() {
+
+
+function Admin() {
     if (AdminToken) {
-        connect.style.display ="none"
-        disconnect.style.display="block"
+        connect.innerHTML = "<a href='#'>logout</a>";
 
-        disconnect.addEventListener("click", (e) =>{
+        connect.addEventListener("click", (e) =>{
             e.preventDefault()
             sessionStorage.removeItem("token");
             window.location.href = "index.html";
-        })
+        });
 
+        bannerEdit();
     }
 }
 
-logout()
+Admin()
+
+// Création de la bannière noire
+function bannerEdit() {
+    const banner = document.getElementById('bannerEdit')
+
+    banner.classList.add("blackBanner")
+    banner.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>'+ "Mode édition";
+}
+
