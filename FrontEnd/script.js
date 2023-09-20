@@ -83,13 +83,13 @@ async function btnfilters () {
 
 // Partie Admin connecté
 
-const AdminToken = sessionStorage.getItem("token")
+const adminToken = sessionStorage.getItem("token")
 const connect = document.getElementById('login')
 
 
 
 function Admin() {
-    if (AdminToken) {
+    if (adminToken) {
         connect.innerHTML = "<a href='#'>logout</a>";
 
         connect.addEventListener("click", (e) =>{
@@ -98,17 +98,34 @@ function Admin() {
             window.location.href = "index.html";
         });
 
-        bannerEdit();
+        
+        adminDisplay();
     }
 }
 
 Admin()
 
-// Création de la bannière noire
-function bannerEdit() {
+
+function adminDisplay() {
+    // Création de la bannière noire
     const banner = document.getElementById('bannerEdit')
 
     banner.classList.add("blackBanner")
     banner.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>'+ "Mode édition";
+
+    // On masque les filtres
+    const filters = document.querySelector(".filters");
+    filters.style.display = "none";
+
+    // Modification de la margin sous le h2 'Mes Projets' 
+    const portfolioTitle = document.querySelector(".portfolioTitle");
+    portfolioTitle.style.marginBottom = "90px";
+
+    // Ajout du bouton modifier
+    const boutonEdit = document.createElement("a");
+    boutonEdit.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>' + "modifier";
+    boutonEdit.href = "#modal1";
+    boutonEdit.classList.add("editBouton")
+    portfolioTitle.appendChild(boutonEdit)
 }
 
