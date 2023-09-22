@@ -1,4 +1,5 @@
 const gallery = document.querySelector('.gallery');
+const galleryModal = document.querySelector(".galleryModal");
 
 displayWorks();
 btnfilters();
@@ -30,22 +31,12 @@ async function displayWorks (categorieId) {
     try {
         const dataworks = await getWorks();
         gallery.innerHTML = "";
-
-            // Création des projets pour l'affichage dans la gallerie
+        galleryModal.innerHTML = "";
+            // Création des projets pour l'affichage dans les galleries
             dataworks.forEach((works) => {
                 if (categorieId == works.category.id || categorieId == null) {
-                
-                    const figure = document.createElement("figure");
-                    const img = document.createElement("img");
-                    const figcaption = document.createElement("figcaption");
-
-                    img.src = works.imageUrl;
-                    figcaption.innerText = works.title;
-                    figure.setAttribute("categorieId", works.category.id);
-
-                    figure.appendChild(img);
-                    figure.appendChild(figcaption);
-                    gallery.appendChild(figure);
+                    createWorks(works)
+                    createWorksModal(works)
                 }
              })
     } catch (error) {
@@ -53,6 +44,38 @@ async function displayWorks (categorieId) {
     }
 };
 
+// Fonction pour créer un projet dans la galerie
+function createWorks(works) {
+    const figure = document.createElement("figure");
+    const img = document.createElement("img");
+    const figcaption = document.createElement("figcaption");
+
+    img.src = works.imageUrl;
+    figcaption.innerText = works.title;
+    figure.setAttribute("categorieId", works.category.id);
+
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+    gallery.appendChild(figure);
+}
+
+// Fonction pour créer un projet dans la galerie de la modale
+function createWorksModal(works) {
+    const figureModal = document.createElement("figure");
+    const imgModal = document.createElement("img");
+
+    imgModal.src = works.imageUrl;
+    figureModal.setAttribute("Id", works.id);
+
+    const iconTrash = document.createElement("div");
+    iconTrash.classList.add("iconTrash");
+    iconTrash.innerHTML = "<i class='fa-solid fa-trash-can modalTrash'></i>";
+
+    figureModal.appendChild(imgModal);
+    figureModal.appendChild(iconTrash);
+    galleryModal.appendChild(figureModal);
+    
+}
 // Boutons filtres par catégories
 
 async function btnfilters () {
@@ -70,7 +93,7 @@ async function btnfilters () {
     })
 
     // Ajout d'un event au clic sur chaque bouton
-    const buttons = document.querySelectorAll("button");
+    const buttons = document.querySelectorAll(".filters button");
     buttons.forEach((button) => {
         button.addEventListener("click", function () {
             let categorieId = button.getAttribute("buttonId");
@@ -125,7 +148,80 @@ function adminDisplay() {
     const boutonEdit = document.createElement("a");
     boutonEdit.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>' + "modifier";
     boutonEdit.href = "#modal1";
-    boutonEdit.classList.add("editBouton")
+    boutonEdit.classList.add("editBouton", "js-modal")
     portfolioTitle.appendChild(boutonEdit)
 }
 
+// MODAL
+let modal = null
+const focusableSelector = "button, a, input, textarea";
+let focusables = [];
+let previouslyFocusedElement = null
+
+// fonction pour ouvrir la modale
+const openModal = function (e) {
+    e.preventDefault();
+    modal = document.querySelector(e.target.getAttribute("href"));
+    focusables = Array.from(modal.querySelectorAll(focusableSelector));
+    previouslyFocusedElement = document.querySelector(':focus')
+    modal.style.display = null;
+    focusables[0].focus()
+    modal.removeAttribute("aria-hidden");
+    modal.setAttribute("aria-modal", "true");
+    modal.addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+  };
+
+// fonction pour fermer la modale
+const closeModal = function (e) {
+    if (modal === null) return;
+    if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
+    e.preventDefault();
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+    modal.removeAttribute("aria-modal");
+    modal.removeEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
+    modal = null
+};
+
+const stopPropagation = function (e) {
+    e.stopPropagation();
+};
+
+// Gérer le focus des éléments dans la modale
+const focusInModal = function (e) {
+    e.preventDefault();
+    let index = focusables.findIndex(f => f === modal.querySelector(":focus"));
+    if (e.shiftKey === true) {
+        index--
+    } else {
+        index++;
+    }
+    if (index >= focusables.length) {
+      index = 0;
+    }
+    if (index < 0) {
+        index = focusables.length - 1
+    }
+    focusables[index].focus();
+    console.log(index);
+  };
+
+
+document.querySelectorAll(".js-modal").forEach((a) => {
+    a.addEventListener("click", openModal);
+});
+
+window.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" || e.key === "Esc") {
+      closeModal(e);
+    }
+    if (e.key === "Tab" && modal !== null) {
+        focusInModal(e);
+      }
+});
+
+ 
