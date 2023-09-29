@@ -1,6 +1,7 @@
 const gallery = document.querySelector('.gallery');
 const galleryModal = document.querySelector(".galleryModal");
 
+
 displayWorks();
 btnfilters();
 
@@ -28,6 +29,7 @@ async function getCategories() {
 // Fonction pour affichage dynamiques des éléments
 
 async function displayWorks (categorieId) {
+    
     try {
         const dataworks = await getWorks();
         gallery.innerHTML = "";
@@ -38,7 +40,7 @@ async function displayWorks (categorieId) {
                     createWorks(works)
                     createWorksModal(works)
                 }
-             })
+             });
     } catch (error) {
         console.log ("Erreur lors de l'affichage des projets")
     }
@@ -65,7 +67,7 @@ function createWorksModal(works) {
     const imgModal = document.createElement("img");
 
     imgModal.src = works.imageUrl;
-    figureModal.setAttribute("Id", works.id);
+    figureModal.setAttribute("id", works.id);
 
     const iconTrash = document.createElement("div");
     iconTrash.classList.add("iconTrash");
@@ -75,6 +77,11 @@ function createWorksModal(works) {
     figureModal.appendChild(iconTrash);
     galleryModal.appendChild(figureModal);
     
+    iconTrash.addEventListener("click", (e) => {
+        
+        deleteWorks(works.id);
+        e.preventDefault();
+    });
 }
 // Boutons filtres par catégories
 
@@ -116,17 +123,20 @@ function Admin() {
         connect.innerHTML = "<a href='#'>logout</a>";
 
         connect.addEventListener("click", (e) =>{
-            e.preventDefault()
+            e.preventDefault();
             sessionStorage.removeItem("token");
             window.location.href = "index.html";
         });
 
         
         adminDisplay();
+        creatModal();
+        
     }
 }
 
 Admin()
+
 
 
 function adminDisplay() {
@@ -153,10 +163,11 @@ function adminDisplay() {
 }
 
 // MODAL
+function creatModal() {
 let modal = null
 const focusableSelector = "button, a, input, textarea";
 let focusables = [];
-let previouslyFocusedElement = null
+
 
 // fonction pour ouvrir la modale
 const openModal = function (e) {
@@ -208,7 +219,7 @@ const focusInModal = function (e) {
     }
     focusables[index].focus();
     console.log(index);
-  };
+};
 
 
 document.querySelectorAll(".js-modal").forEach((a) => {
@@ -223,5 +234,29 @@ window.addEventListener("keydown", function (e) {
         focusInModal(e);
       }
 });
+};
 
- 
+async function deleteWorks(workId) {
+    const adminToken = sessionStorage.getItem("token")
+    try {
+        if (window.confirm("Êtes vous sûr de vouloir effacer ce projet?")) {
+            let response = await fetch(`http://localhost:5678/api/works/${workId}`, {
+                method: "DELETE",
+                headers: {
+                    accept: "*/*",
+                    Authorization: `Bearer ${adminToken}`,
+                },
+            });
+        
+
+            if (response.status === 200) {
+                console.log("Projet supprimé avec succès.");
+                displayWorks();
+            } else if (response.status === 401) {
+                console.error("Non autorisé à effectuer cette action.");
+            }
+        }    
+    } catch (error) {
+        console.error("Erreur lors de la requête:", error);
+      };
+};
