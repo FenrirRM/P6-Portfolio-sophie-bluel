@@ -284,28 +284,46 @@ footer nav ul {
 }
 
 .modal-wrapper {
+	box-sizing: border-box;
 	position: relative;
 	overflow: auto;
 	width: 630px;
 	max-width: calc(100vw - 20px);
 	max-height: calc(100vh - 20px);
-	padding: 65px 10% 45px;
+	padding: 65px 8% 45px;
 	border-radius: 10px;
 	background-color: white;
 }
+
+.arrowLeft {
+	display: none;
+	position: absolute;
+	border: none;
+	background-color: transparent;
+	left: 28px;
+	top: 28px;
+	cursor: pointer;
+  }
 
 .js-modal-close {
 	position: absolute;
 	border: none;
 	color: #000;
 	background-color: transparent;
-	right: 30px;
-	top: 30px;
+	right: 28px;
+	top: 28px;
 	cursor: pointer;
 }  
   
-.modalContent {
+.modalContent1 {
 	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.modalContent2 {
+	display: none;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
@@ -372,4 +390,87 @@ footer nav ul {
 	border-radius: 60px;
 	cursor: pointer;
 	margin-bottom: 27px;
+}
+
+.addPhoto {
+	width: 420px;
+	height: 169px;
+	border-radius: 3px;
+	background-color: #e8f1f6;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	position: relative;
+}
+
+.logoPhoto {
+	font-size: 63px;
+	color: #B9C5CC;
+}
+
+.btnPhotoInput {
+	color: #306685;
+    background-color: #CBD6DC;
+    border-radius: 50px;
+    padding: 10px 33px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.photoInputTxt {
+	font-size: 10px;
+}
+
+#formModal {
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+}
+
+.formSize {
+	height: 50px;
+	width: 420px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+.formLabel {
+	margin: 2em 0 1em 0;
+	font-weight: 600;
+	color: #3D3D3D;
+}
+
+#photoInput {
+	display: none;
+}
+
+#buttonValidate {
+	background-color: #A7A7A7;
+	color: white;
+	border-radius: 60px;
+	margin-top: 32px;
+	width: 37%;
+	padding: 10px 49px;
+	border: none;
+	cursor: pointer;
+}
+
+.imageFile {
+	height: 169px;
+	object-fit: contain;
+}
+
+.iconDelete {
+	position: absolute;
+	display: none;
+	right: 20px;
+	top: 20px;
+	cursor: pointer;
+}
+
+.errorImg {
+	color: red;
 }
