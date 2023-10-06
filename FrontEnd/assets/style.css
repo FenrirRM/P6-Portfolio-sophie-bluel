@@ -281,6 +281,7 @@ footer nav ul {
 	align-items: center;
 	justify-content: center;
 	background: rgba(0, 0, 0, 0.3);
+	animation: fadeIn .3s both
 }
 
 .modal-wrapper {
@@ -293,6 +294,15 @@ footer nav ul {
 	padding: 65px 8% 45px;
 	border-radius: 10px;
 	background-color: white;
+	animation: slideFromTop .4s both;
+}
+
+.modal[aria-hidden="true"] {
+	animation-name: fadeOut;
+}
+
+.modal[aria-hidden="true"] .modal-wrapper {
+	animation-name: slideToBottom;
 }
 
 .arrowLeft {
@@ -475,4 +485,24 @@ footer nav ul {
 
 .errorImg {
 	color: red;
+}
+
+@keyframes fadeIn {
+	from {opacity: 0;}
+	to {opacity: 1;}
+}
+
+@keyframes fadeOut {
+	from {opacity: 1;}
+	to {opacity: 0;}
+}
+
+@keyframes slideFromTop {
+	from { transform: translateY(-50px);}
+	to { transform: translateY(0px);}
+}
+
+@keyframes slideToBottom {
+	from { transform: translateY(0px);}
+	to { transform: translateY(50px);}
 }

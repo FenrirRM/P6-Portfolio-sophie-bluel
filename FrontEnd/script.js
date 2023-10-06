@@ -14,8 +14,8 @@ start();
 
 async function getWorks() {
     try {
-    const worksResponse = await fetch("http://localhost:5678/api/works");
-    return worksResponse.json();
+        const worksResponse = await fetch("http://localhost:5678/api/works");
+        return worksResponse.json();
     } catch (error) {
         console.log("Erreur lors de la récupération des projets depuis l'API");
     };
@@ -23,30 +23,30 @@ async function getWorks() {
 
 async function getCategories() {
     try {
-    const categoriesResponse = await fetch("http://localhost:5678/api/categories");
-    return await categoriesResponse.json();
-} catch (error) {
-    console.log("Erreur lors de la récupération des catégories depuis l'API");
-};
+        const categoriesResponse = await fetch("http://localhost:5678/api/categories");
+        return await categoriesResponse.json();
+    } catch (error) {
+        console.log("Erreur lors de la récupération des catégories depuis l'API");
+    };
 };
 
 // Fonction pour affichage dynamiques des éléments
 
-async function displayWorks (categorieId) {
-    
+async function displayWorks(categorieId) {
+
     try {
         const dataworks = await getWorks();
         gallery.innerHTML = "";
         galleryModal.innerHTML = "";
-            // Création des projets pour l'affichage dans les galleries
-            dataworks.forEach((works) => {
-                if (categorieId == works.category.id || categorieId == null) {
-                    createWorks(works);
-                    createWorksModal(works);
-                }
-             });
+        // Création des projets pour l'affichage dans les galleries
+        dataworks.forEach((works) => {
+            if (categorieId == works.category.id || categorieId == null) {
+                createWorks(works);
+                createWorksModal(works);
+            }
+        });
     } catch (error) {
-        console.log ("Erreur lors de l'affichage des projets");
+        console.log("Erreur lors de l'affichage des projets");
     };
 };
 
@@ -80,25 +80,25 @@ function createWorksModal(works) {
     figureModal.appendChild(imgModal);
     figureModal.appendChild(iconTrash);
     galleryModal.appendChild(figureModal);
-    
+
     // Ajout d'un event listener sur l'icon corbeille pour supprimer un projet
     iconTrash.addEventListener("click", (e) => {
         e.preventDefault();
         deleteWorks(works.id);
-        
+
     });
 };
 
 // Boutons filtres par catégories
-async function btnfilters () {
-    
+async function btnfilters() {
+
     const dataCategories = await getCategories();
     const filters = document.querySelector(".filters");
 
     // Créations des boutons
     dataCategories.forEach((category) => {
-        const btnCategorie =document.createElement("button");
-        btnCategorie.innerText = category.name ;
+        const btnCategorie = document.createElement("button");
+        btnCategorie.innerText = category.name;
         btnCategorie.setAttribute("class", "filterButton")
         btnCategorie.setAttribute("buttonId", category.id);
         filters.appendChild(btnCategorie);
@@ -111,7 +111,7 @@ async function btnfilters () {
             let categorieId = button.getAttribute("buttonId");
             buttons.forEach((button) => button.classList.remove("filterButtonActive"));
             this.classList.add("filterButtonActive");
-            displayWorks (categorieId);
+            displayWorks(categorieId);
         });
     });
 };
@@ -124,19 +124,19 @@ function Admin() {
 
         connect.innerHTML = "<a href='#'>logout</a>";
 
-        connect.addEventListener("click", (e) =>{
+        connect.addEventListener("click", (e) => {
             e.preventDefault();
             sessionStorage.removeItem("token");
             window.location.href = "index.html";
         });
 
-        
-        adminDisplay();       
+
+        adminDisplay();
         navigateModal();
         createCategoryOption();
         inputFiles();
         addWorks();
-        
+
     };
 };
 
@@ -145,7 +145,7 @@ function adminDisplay() {
     const banner = document.getElementById('bannerEdit')
 
     banner.classList.add("blackBanner")
-    banner.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>'+ "Mode édition";
+    banner.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>' + "Mode édition";
 
     // On masque les filtres
     const filters = document.querySelector(".filters");
@@ -182,30 +182,32 @@ const openModal = function (e) {
     modal.addEventListener("click", closeModal);
     modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
     modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
-  };
+};
 
 // fonction pour fermer la modale
 const closeModal = function (e) {
     if (modal === null) return;
     if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
-    modal.style.display = "none";
-    modal.setAttribute("aria-hidden", "true");
-    modal.removeAttribute("aria-modal");
-    modal.removeEventListener("click", closeModal);
-    modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
-    modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
-    modal = null;
 
     const modalContent1 = document.querySelector(".modalContent1");
     const modalContent2 = document.querySelector(".modalContent2");
     const arrowLeft = document.querySelector(".arrowLeft");
 
-    modalContent1.style.display = "flex";
-    modalContent2.style.display = "none";
-    arrowLeft.style.display = "none";
+    window.setTimeout(function () {
+        modal.style.display = "none";
+        modal = null;
+        modalContent1.style.display = "flex";
+        modalContent2.style.display = "none";
+        arrowLeft.style.display = "none";
+        // Reset formulaire 
+        resetForm();
+    }, 300);
 
-    // Reset formulaire 
-    resetForm();
+    modal.setAttribute("aria-hidden", "true");
+    modal.removeAttribute("aria-modal");
+    modal.removeEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
 
 };
 
@@ -223,7 +225,7 @@ const focusInModal = function (e) {
         index++;
     }
     if (index >= focusables.length) {
-      index = 0;
+        index = 0;
     }
     if (index < 0) {
         index = focusables.length - 1
@@ -239,11 +241,11 @@ document.querySelectorAll(".js-modal").forEach((a) => {
 
 window.addEventListener("keydown", function (e) {
     if (e.key === "Escape" || e.key === "Esc") {
-      closeModal(e);
+        closeModal(e);
     }
     if (e.key === "Tab" && modal !== null) {
         focusInModal(e);
-      }
+    }
 });
 
 // Fonction pour supprimer un projet
@@ -257,7 +259,7 @@ async function deleteWorks(workId) {
                     accept: "*/*",
                     Authorization: `Bearer ${adminToken}`,
                 },
-            });        
+            });
 
             if (response.ok) {
                 console.log("Projet supprimé avec succès.");
@@ -265,14 +267,14 @@ async function deleteWorks(workId) {
             } else if (response.status === 401) {
                 console.error("Non autorisé à effectuer cette action.");
             }
-        }    
+        }
     } catch (error) {
         console.error("Erreur lors de la requête:", error);
-      };
+    };
 };
 
 // Fonction pour changer de fenêtre dans la modale
-function navigateModal () {
+function navigateModal() {
     const buttonModal = document.querySelector(".buttonModal");
     const modalContent1 = document.querySelector(".modalContent1");
     const modalContent2 = document.querySelector(".modalContent2");
@@ -284,15 +286,15 @@ function navigateModal () {
         modalContent2.style.display = "flex";
         arrowLeft.style.display = "flex";
         buttonFormCheck();
-      });
-    
+    });
+
     // Pour aller vers la fenêtre de la gallerie de la modale
     arrowLeft.addEventListener("click", function () {
         modalContent1.style.display = "flex";
         modalContent2.style.display = "none";
         arrowLeft.style.display = "none";
         resetForm()
-      });  
+    });
 };
 
 // Fonction pour créer les options pour la selection de catégorie d'ajout photo
@@ -307,7 +309,7 @@ async function createCategoryOption() {
         option.classList.add("option");
         categorie.appendChild(option);
     });
-    
+
 };
 
 // Fonction pour afficher la preview de l'image input 
@@ -328,11 +330,11 @@ function inputFiles() {
         if (file.size > fileMaxSize) {
             errorImg.textContent = "Votre image est trop volumineuse";
             console.log("Image file > 4mo");
-            return;        
+            return;
         };
 
         errorImg.textContent = "";
-        const reader = new FileReader();        
+        const reader = new FileReader();
 
         reader.addEventListener("load", function () {
 
@@ -342,7 +344,7 @@ function inputFiles() {
             img.classList.add("imageFile");
             viewImage.appendChild(img);
         });
-    
+
         reader.readAsDataURL(file);
 
         // Cacher les éléments de la boite ajout photo et afficher la croix
@@ -355,7 +357,7 @@ function inputFiles() {
         // Event sur la croix pour enlever le file input
         iconDelete.addEventListener("click", function () {
             const imageFile = document.querySelector(".imageFile");
-            
+
             // Afficher les éléments de la boite ajout photo et cacher la croix
             logoPhoto.style.display = "flex";
             btnPhotoInput.style.display = "flex";
@@ -372,8 +374,8 @@ function inputFiles() {
             buttonFormCheck()
         });
 
-    });    
-      
+    });
+
 };
 
 // Fonction pour ajouter un projet
@@ -417,8 +419,8 @@ function addWorks() {
             this.reset();
             closeModal();
         } else {
-            console.log ("erreur formulaire");
-          };
+            console.log("erreur formulaire");
+        };
     });
 };
 
@@ -443,11 +445,11 @@ function resetForm() {
 
     if (imageFile) {
         imageFile.remove();
-    }
+    };
 
     inputFile.value = "";
     errorImg.textContent = "";
-}
+};
 
 // Fonction pour activé ou désactivé le boutton de formulaire en fonction des champs remplis
 
@@ -458,15 +460,15 @@ function buttonFormCheck() {
     const buttonValidate = document.getElementById("buttonValidate");
 
 
-    if (titleWork.value !== "" && select.value !== "" && inputFile.files.length > 0 ) {
-        buttonValidate.disabled = false ;
+    if (titleWork.value !== "" && select.value !== "" && inputFile.files.length > 0) {
+        buttonValidate.disabled = false;
         buttonValidate.style.backgroundColor = "#1d6154";
         console.log("formulaire ok");
     } else {
-        buttonValidate.disabled = true ;
+        buttonValidate.disabled = true;
         buttonValidate.style.backgroundColor = "#a7a7a7";
         console.log("formulaire incomplet");
-      };
+    };
 
 };
 
