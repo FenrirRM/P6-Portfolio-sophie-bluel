@@ -1,10 +1,14 @@
 const gallery = document.querySelector('.gallery');
 const galleryModal = document.querySelector(".galleryModal");
+const adminToken = sessionStorage.getItem("token")
 
+async function start() {
+    displayWorks();
+    btnfilters();
+    Admin();
+}
 
-displayWorks();
-btnfilters();
-
+start();
 
 // Fonction d'appel API
 
@@ -13,18 +17,18 @@ async function getWorks() {
     const worksResponse = await fetch("http://localhost:5678/api/works");
     return worksResponse.json();
     } catch (error) {
-        console.log("Erreur lors de la récupération des projets depuis l'API")
-    }
-}
+        console.log("Erreur lors de la récupération des projets depuis l'API");
+    };
+};
 
 async function getCategories() {
     try {
     const categoriesResponse = await fetch("http://localhost:5678/api/categories");
     return await categoriesResponse.json();
 } catch (error) {
-    console.log("Erreur lors de la récupération des catégories depuis l'API")
-}
-}
+    console.log("Erreur lors de la récupération des catégories depuis l'API");
+};
+};
 
 // Fonction pour affichage dynamiques des éléments
 
@@ -37,13 +41,13 @@ async function displayWorks (categorieId) {
             // Création des projets pour l'affichage dans les galleries
             dataworks.forEach((works) => {
                 if (categorieId == works.category.id || categorieId == null) {
-                    createWorks(works)
-                    createWorksModal(works)
+                    createWorks(works);
+                    createWorksModal(works);
                 }
              });
     } catch (error) {
-        console.log ("Erreur lors de l'affichage des projets")
-    }
+        console.log ("Erreur lors de l'affichage des projets");
+    };
 };
 
 // Fonction pour créer un projet dans la galerie
@@ -83,7 +87,7 @@ function createWorksModal(works) {
         deleteWorks(works.id);
         
     });
-}
+};
 
 // Boutons filtres par catégories
 async function btnfilters () {
@@ -98,7 +102,7 @@ async function btnfilters () {
         btnCategorie.setAttribute("class", "filterButton")
         btnCategorie.setAttribute("buttonId", category.id);
         filters.appendChild(btnCategorie);
-    })
+    });
 
     // Ajout d'un event au clic sur chaque bouton
     const buttons = document.querySelectorAll(".filters button");
@@ -108,19 +112,16 @@ async function btnfilters () {
             buttons.forEach((button) => button.classList.remove("filterButtonActive"));
             this.classList.add("filterButtonActive");
             displayWorks (categorieId);
-        })
-    })
-}
+        });
+    });
+};
 
 // Partie Admin connecté
 
-const adminToken = sessionStorage.getItem("token")
-const connect = document.getElementById('login')
-
-
-
 function Admin() {
     if (adminToken) {
+        const connect = document.getElementById('login');
+
         connect.innerHTML = "<a href='#'>logout</a>";
 
         connect.addEventListener("click", (e) =>{
@@ -130,18 +131,14 @@ function Admin() {
         });
 
         
-        adminDisplay();
-        creatModal();
+        adminDisplay();       
         navigateModal();
-        creatOption();
-        inputFiles()
+        createCategoryOption();
+        inputFiles();
+        addWorks();
         
-    }
-}
-
-Admin()
-
-
+    };
+};
 
 function adminDisplay() {
     // Création de la bannière noire
@@ -167,11 +164,10 @@ function adminDisplay() {
 }
 
 // MODAL
-function creatModal() {
+
 let modal = null
 const focusableSelector = "button, a, input, textarea";
 let focusables = [];
-
 
 // fonction pour ouvrir la modale
 const openModal = function (e) {
@@ -192,7 +188,6 @@ const openModal = function (e) {
 const closeModal = function (e) {
     if (modal === null) return;
     if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
-    e.preventDefault();
     modal.style.display = "none";
     modal.setAttribute("aria-hidden", "true");
     modal.removeAttribute("aria-modal");
@@ -208,6 +203,10 @@ const closeModal = function (e) {
     modalContent1.style.display = "flex";
     modalContent2.style.display = "none";
     arrowLeft.style.display = "none";
+
+    // Reset formulaire 
+    resetForm();
+
 };
 
 const stopPropagation = function (e) {
@@ -246,7 +245,6 @@ window.addEventListener("keydown", function (e) {
         focusInModal(e);
       }
 });
-};
 
 // Fonction pour supprimer un projet
 async function deleteWorks(workId) {
@@ -259,8 +257,7 @@ async function deleteWorks(workId) {
                     accept: "*/*",
                     Authorization: `Bearer ${adminToken}`,
                 },
-            });
-        
+            });        
 
             if (response.ok) {
                 console.log("Projet supprimé avec succès.");
@@ -286,6 +283,7 @@ function navigateModal () {
         modalContent1.style.display = "none";
         modalContent2.style.display = "flex";
         arrowLeft.style.display = "flex";
+        buttonFormCheck();
       });
     
     // Pour aller vers la fenêtre de la gallerie de la modale
@@ -293,11 +291,12 @@ function navigateModal () {
         modalContent1.style.display = "flex";
         modalContent2.style.display = "none";
         arrowLeft.style.display = "none";
+        resetForm()
       });  
 };
 
 // Fonction pour créer les options pour la selection de catégorie d'ajout photo
-async function creatOption() {
+async function createCategoryOption() {
     const dataCategories = await getCategories();
     const categorie = document.getElementById("category");
 
@@ -311,7 +310,7 @@ async function creatOption() {
     
 };
 
-// Fonction pour afficher la preview de l'image input
+// Fonction pour afficher la preview de l'image input 
 function inputFiles() {
     const viewImage = document.querySelector(".addPhoto");
     const iconDelete = document.querySelector(".iconDelete");
@@ -330,7 +329,7 @@ function inputFiles() {
             errorImg.textContent = "Votre image est trop volumineuse";
             console.log("Image file > 4mo");
             return;        
-        }
+        };
 
         errorImg.textContent = "";
         const reader = new FileReader();        
@@ -370,9 +369,104 @@ function inputFiles() {
             }
 
             inputFile.value = "";
+            buttonFormCheck()
         });
 
-    });
-    
+    });    
       
 };
+
+// Fonction pour ajouter un projet
+function addWorks() {
+    const titleWork = document.getElementById("title");
+    const select = document.getElementById("category");
+    const inputFile = document.getElementById("photoInput");
+    const form = document.getElementById("formModal");
+
+    titleWork.addEventListener("input", buttonFormCheck);
+    select.addEventListener("input", buttonFormCheck);
+    inputFile.addEventListener("input", buttonFormCheck);
+
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const file = await inputFile.files[0];
+        Title = titleWork.value;
+        Category = select.value;
+        ImageValue = file;
+
+        const formData = new FormData();
+        formData.append("image", ImageValue);
+        formData.append("title", Title);
+        formData.append("category", Category);
+
+        const adminToken = sessionStorage.getItem("token");
+
+        let response = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${adminToken}`,
+            },
+            body: formData,
+        });
+
+        if (response.ok) {
+            console.log("Projet ajouté avec succès.");
+            displayWorks();
+            this.reset();
+            closeModal();
+        } else {
+            console.log ("erreur formulaire");
+          };
+    });
+};
+
+// Fonction pour reset le formulaire ajout image
+function resetForm() {
+    const form = document.getElementById("formModal");
+    form.reset();
+
+    const imageFile = document.querySelector(".imageFile");
+    const inputFile = document.getElementById("photoInput");
+    const iconDelete = document.querySelector(".iconDelete");
+    const logoPhoto = document.querySelector(".logoPhoto");
+    const btnPhotoInput = document.querySelector(".btnPhotoInput");
+    const photoInputTxt = document.querySelector(".photoInputTxt");
+    const errorImg = document.querySelector(".errorImg");
+
+    logoPhoto.style.display = "flex";
+    btnPhotoInput.style.display = "flex";
+    photoInputTxt.style.display = "flex";
+    errorImg.style.display = "flex";
+    iconDelete.style.display = "none";
+
+    if (imageFile) {
+        imageFile.remove();
+    }
+
+    inputFile.value = "";
+    errorImg.textContent = "";
+}
+
+// Fonction pour activé ou désactivé le boutton de formulaire en fonction des champs remplis
+
+function buttonFormCheck() {
+    const titleWork = document.getElementById("title");
+    const select = document.getElementById("category");
+    const inputFile = document.getElementById("photoInput");
+    const buttonValidate = document.getElementById("buttonValidate");
+
+
+    if (titleWork.value !== "" && select.value !== "" && inputFile.files.length > 0 ) {
+        buttonValidate.disabled = false ;
+        buttonValidate.style.backgroundColor = "#1d6154";
+        console.log("formulaire ok");
+    } else {
+        buttonValidate.disabled = true ;
+        buttonValidate.style.backgroundColor = "#a7a7a7";
+        console.log("formulaire incomplet");
+      };
+
+};
+
