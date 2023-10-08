@@ -73,7 +73,7 @@ function createWorksModal(works) {
     imgModal.src = works.imageUrl;
     figureModal.setAttribute("id", works.id);
 
-    const iconTrash = document.createElement("div");
+    const iconTrash = document.createElement("button");
     iconTrash.classList.add("iconTrash");
     iconTrash.innerHTML = "<i class='fa-solid fa-trash-can modalTrash'></i>";
 
@@ -118,20 +118,22 @@ async function btnfilters() {
 
 // Partie Admin connecté
 
+// Fonction Admin principale
 function Admin() {
-    if (adminToken) {
-        const connect = document.getElementById('login');
+    if (adminToken) { // si le token admin est présent
 
+        // Modification de 'login' en 'logout'
+        const connect = document.getElementById('login');
         connect.innerHTML = "<a href='#'>logout</a>";
 
+        //Ajout d'un event listener pour supprimer le token d'idenfication
         connect.addEventListener("click", (e) => {
-            e.preventDefault();
-            sessionStorage.removeItem("token");
-            window.location.href = "index.html";
+            sessionStorage.removeItem("token");  // on supprime le token du session storage
+            window.location.href = "index.html"; // on recharge la page index
         });
 
-
         adminDisplay();
+        createModal()
         navigateModal();
         createCategoryOption();
         inputFiles();
@@ -140,10 +142,10 @@ function Admin() {
     };
 };
 
+// Fonction pour modifier ou ajouter des élément pour la page index connectée
 function adminDisplay() {
     // Création de la bannière noire
     const banner = document.getElementById('bannerEdit')
-
     banner.classList.add("blackBanner")
     banner.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>' + "Mode édition";
 
@@ -151,6 +153,10 @@ function adminDisplay() {
     const filters = document.querySelector(".filters");
     filters.style.display = "none";
 
+    // Modification de la margin au dessus du header
+    const header = document.querySelector("header");
+    header.style.marginTop = "109px";
+    
     // Modification de la margin sous le h2 'Mes Projets' 
     const portfolioTitle = document.querySelector(".portfolioTitle");
     portfolioTitle.style.marginBottom = "90px";
@@ -163,107 +169,85 @@ function adminDisplay() {
     portfolioTitle.appendChild(boutonEdit)
 }
 
-// MODAL
+// Fonction pour créer la fenêtre modale
+function createModal() {
+    let modal = null
 
-let modal = null
-const focusableSelector = "button, a, input, textarea";
-let focusables = [];
+    // fonction pour ouvrir la modale
+    const openModal = function (e) {
+        e.preventDefault();
+        modal = document.querySelector(e.target.getAttribute("href"));
+        previouslyFocusedElement = document.querySelector(':focus');
+        modal.style.display = null;
+        modal.removeAttribute("aria-hidden");
+        modal.setAttribute("aria-modal", "true");
+        modal.addEventListener("click", closeModal);
+        modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
+        modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+    };
 
-// fonction pour ouvrir la modale
-const openModal = function (e) {
-    e.preventDefault();
-    modal = document.querySelector(e.target.getAttribute("href"));
-    focusables = Array.from(modal.querySelectorAll(focusableSelector));
-    previouslyFocusedElement = document.querySelector(':focus')
-    modal.style.display = null;
-    focusables[0].focus()
-    modal.removeAttribute("aria-hidden");
-    modal.setAttribute("aria-modal", "true");
-    modal.addEventListener("click", closeModal);
-    modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
-    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
+    // fonction pour fermer la modale
+    const closeModal = function (e) {
+        if (modal === null) return; // si il n'y as pas de modale d'afficher la fonction s'arrête là 
+        if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
+
+        const modalContent1 = document.querySelector(".modalContent1");
+        const modalContent2 = document.querySelector(".modalContent2");
+        const arrowLeft = document.querySelector(".arrowLeft");
+
+        // On ajoute un timer de 300ms pour laisser l'animation de fermeture se jouer
+        window.setTimeout(function () {
+            modal.style.display = "none";
+            modal = null;
+            modalContent1.style.display = "flex";
+            modalContent2.style.display = "none";
+            arrowLeft.style.display = "none";
+            // Reset formulaire 
+            resetForm();
+        }, 300);
+
+        modal.setAttribute("aria-hidden", "true");
+        modal.removeAttribute("aria-modal");
+        modal.removeEventListener("click", closeModal);
+        modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
+        modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
+    };
+
+    // Fonction pour empêcher la propagation de l'évènement aux parents
+    const stopPropagation = function (e) {
+        e.stopPropagation();
+    };
+
+    // Ajout d'un event listener pour ouvrir la modale 
+    document.querySelectorAll(".js-modal").forEach((a) => {
+        a.addEventListener("click", openModal);
+    });
+
+    // Gestion de la touche 'echap' pour fermer la modale
+    window.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" || e.key === "Esc") {
+            closeModal(e);
+        };
+    });
 };
-
-// fonction pour fermer la modale
-const closeModal = function (e) {
-    if (modal === null) return;
-    if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
-
-    const modalContent1 = document.querySelector(".modalContent1");
-    const modalContent2 = document.querySelector(".modalContent2");
-    const arrowLeft = document.querySelector(".arrowLeft");
-
-    window.setTimeout(function () {
-        modal.style.display = "none";
-        modal = null;
-        modalContent1.style.display = "flex";
-        modalContent2.style.display = "none";
-        arrowLeft.style.display = "none";
-        // Reset formulaire 
-        resetForm();
-    }, 300);
-
-    modal.setAttribute("aria-hidden", "true");
-    modal.removeAttribute("aria-modal");
-    modal.removeEventListener("click", closeModal);
-    modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
-    modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
-
-};
-
-const stopPropagation = function (e) {
-    e.stopPropagation();
-};
-
-// Gérer le focus des éléments dans la modale
-const focusInModal = function (e) {
-    e.preventDefault();
-    let index = focusables.findIndex(f => f === modal.querySelector(":focus"));
-    if (e.shiftKey === true) {
-        index--
-    } else {
-        index++;
-    }
-    if (index >= focusables.length) {
-        index = 0;
-    }
-    if (index < 0) {
-        index = focusables.length - 1
-    }
-    focusables[index].focus();
-    console.log(index);
-};
-
-
-document.querySelectorAll(".js-modal").forEach((a) => {
-    a.addEventListener("click", openModal);
-});
-
-window.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" || e.key === "Esc") {
-        closeModal(e);
-    }
-    if (e.key === "Tab" && modal !== null) {
-        focusInModal(e);
-    }
-});
 
 // Fonction pour supprimer un projet
 async function deleteWorks(workId) {
     const adminToken = sessionStorage.getItem("token")
     try {
-        if (window.confirm("Êtes vous sûr de vouloir effacer ce projet?")) {
+        if (window.confirm("Êtes vous sûr de vouloir effacer ce projet?")) { // fenêtre de confirmation
+
+            // Requête API pour supprimer un projet en fonction de son Id 
             let response = await fetch(`http://localhost:5678/api/works/${workId}`, {
                 method: "DELETE",
                 headers: {
-                    accept: "*/*",
                     Authorization: `Bearer ${adminToken}`,
                 },
             });
 
             if (response.ok) {
                 console.log("Projet supprimé avec succès.");
-                displayWorks();
+                displayWorks(); // on actualise les galeries avec les projets récupérer de l'api
             } else if (response.status === 401) {
                 console.error("Non autorisé à effectuer cette action.");
             }
@@ -306,7 +290,6 @@ async function createCategoryOption() {
         const option = document.createElement("option");
         option.innerText = category.name;
         option.value = category.id;
-        option.classList.add("option");
         categorie.appendChild(option);
     });
 
@@ -325,57 +308,57 @@ function inputFiles() {
     inputFile.addEventListener("change", () => {
         const file = inputFile.files[0];
 
-        // Erreur si l'image fait plus de 4mo
+        // Erreur si l'image fait plus de 4mo ou si mauvais type de fichier
         const fileMaxSize = 4 * 1024 * 1024;
         if (file.size > fileMaxSize) {
+            inputFile.value = "";
             errorImg.textContent = "Votre image est trop volumineuse";
             console.log("Image file > 4mo");
-            return;
-        };
-
-        errorImg.textContent = "";
-        const reader = new FileReader();
-
-        reader.addEventListener("load", function () {
-
-            // Création d'un nouvel élément `img`
-            const img = document.createElement("img");
-            img.setAttribute("src", reader.result);
-            img.classList.add("imageFile");
-            viewImage.appendChild(img);
-        });
-
-        reader.readAsDataURL(file);
-
-        // Cacher les éléments de la boite ajout photo et afficher la croix
-        logoPhoto.style.display = "none";
-        btnPhotoInput.style.display = "none";
-        photoInputTxt.style.display = "none";
-        errorImg.style.display = "none";
-        iconDelete.style.display = "flex";
-
-        // Event sur la croix pour enlever le file input
-        iconDelete.addEventListener("click", function () {
-            const imageFile = document.querySelector(".imageFile");
-
-            // Afficher les éléments de la boite ajout photo et cacher la croix
-            logoPhoto.style.display = "flex";
-            btnPhotoInput.style.display = "flex";
-            photoInputTxt.style.display = "flex";
-            errorImg.style.display = "flex";
-            iconDelete.style.display = "none";
-
-            // Supprimer l'image
-            if (imageFile) {
-                imageFile.remove();
-            }
-
-            inputFile.value = "";
             buttonFormCheck()
-        });
 
+        } else if (file.type !== "image/jpg" && file.type !== "image/jpeg" && file.type !== "image/png") {
+            inputFile.value = "";
+            errorImg.textContent = "Votre image doit être au format jpg/jpeg ou png";
+            console.log("Erreur format image");
+            buttonFormCheck()
+        } else {  // image valide
+
+            // On enlève le message d'erreur
+            errorImg.textContent = "";
+
+            // Création de l'image preview
+            const uploadedImage = document.createElement("img");
+            uploadedImage.src = URL.createObjectURL(file);
+            uploadedImage.classList.add("imageFile");
+            viewImage.appendChild(uploadedImage);
+
+            // Cacher les éléments de la boite ajout photo et afficher la croix
+            logoPhoto.style.display = "none";
+            btnPhotoInput.style.display = "none";
+            photoInputTxt.style.display = "none";
+            errorImg.style.display = "none";
+            iconDelete.style.display = "flex";
+
+            // Event sur la croix pour enlever le file input
+            iconDelete.addEventListener("click", function () {
+                const imageFile = document.querySelector(".imageFile");
+
+                // Afficher les éléments de la boite ajout photo et cacher la croix
+                logoPhoto.style.display = "flex";
+                btnPhotoInput.style.display = "flex";
+                photoInputTxt.style.display = "flex";
+                errorImg.style.display = "flex";
+                iconDelete.style.display = "none";
+
+                // Supprimer l'image
+                if (imageFile) {
+                    imageFile.remove();
+                }
+                inputFile.value = "";
+                buttonFormCheck()
+            });
+        }
     });
-
 };
 
 // Fonction pour ajouter un projet
@@ -391,7 +374,6 @@ function addWorks() {
 
     form.addEventListener("submit", async function (e) {
         e.preventDefault();
-        e.stopPropagation();
 
         const file = await inputFile.files[0];
         Title = titleWork.value;
@@ -405,6 +387,7 @@ function addWorks() {
 
         const adminToken = sessionStorage.getItem("token");
 
+        // Requête API pour ajouter un projet
         let response = await fetch("http://localhost:5678/api/works", {
             method: "POST",
             headers: {
@@ -415,9 +398,9 @@ function addWorks() {
 
         if (response.ok) {
             console.log("Projet ajouté avec succès.");
-            displayWorks();
-            this.reset();
-            closeModal();
+            displayWorks(); // on actualise les galeries avec les projets récupérer de l'api
+            this.reset();   // on reset le formulaire ajout image
+            closeModal();   // on ferme la modale
         } else {
             console.log("erreur formulaire");
         };
@@ -446,21 +429,18 @@ function resetForm() {
     if (imageFile) {
         imageFile.remove();
     };
-
     inputFile.value = "";
     errorImg.textContent = "";
 };
 
 // Fonction pour activé ou désactivé le boutton de formulaire en fonction des champs remplis
-
 function buttonFormCheck() {
     const titleWork = document.getElementById("title");
     const select = document.getElementById("category");
     const inputFile = document.getElementById("photoInput");
     const buttonValidate = document.getElementById("buttonValidate");
 
-
-    if (titleWork.value !== "" && select.value !== "" && inputFile.files.length > 0) {
+    if (titleWork.value !== "" && select.value !== "" && inputFile.files.length !== 0) {
         buttonValidate.disabled = false;
         buttonValidate.style.backgroundColor = "#1d6154";
         console.log("formulaire ok");
@@ -469,6 +449,4 @@ function buttonFormCheck() {
         buttonValidate.style.backgroundColor = "#a7a7a7";
         console.log("formulaire incomplet");
     };
-
 };
-

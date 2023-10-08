@@ -250,6 +250,9 @@ footer nav ul {
 /**** ADMIN ****/
 
 .blackBanner{
+	position: absolute;
+	left: 0;
+	top: 0;
 	background-color: black;
 	height: 59px;
 	width: 100%;
@@ -291,7 +294,7 @@ footer nav ul {
 	width: 630px;
 	max-width: calc(100vw - 20px);
 	max-height: calc(100vh - 20px);
-	padding: 65px 8% 45px;
+	padding: 60px 100px 45px;
 	border-radius: 10px;
 	background-color: white;
 	animation: slideFromTop .4s both;
@@ -350,7 +353,7 @@ footer nav ul {
 	padding-top: 1em;
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
-	grid-gap: 30px 10px;
+	grid-gap: 27px 8px;
 }
   
 .galleryModal img {
@@ -367,15 +370,16 @@ footer nav ul {
   	right: 5px;
   	background-color: #000000;
   	color: #ffffff;
-	font-size: 10px;
-  	width: 18px;
-  	height: 18px;
+	font-size: 9px;
+  	width: 17px;
+  	height: 17px;
 	padding: 1px 2px 1px 1px;
   	display: flex;
   	align-items: center;
   	justify-content: center;
   	border-radius: 4px;
   	cursor: pointer;
+	border: none;
 }
 
 
@@ -399,7 +403,6 @@ footer nav ul {
 	text-align: center;
 	border-radius: 60px;
 	cursor: pointer;
-	margin-bottom: 27px;
 }
 
 .addPhoto {
@@ -468,6 +471,7 @@ footer nav ul {
 	padding: 10px 49px;
 	border: none;	
 	cursor: pointer;
+	margin-bottom: 11px;
 }
 
 .imageFile {
