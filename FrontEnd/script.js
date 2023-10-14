@@ -133,7 +133,6 @@ function Admin() {
         });
 
         adminDisplay();
-        createModal()
         navigateModal();
         createCategoryOption();
         inputFiles();
@@ -156,7 +155,7 @@ function adminDisplay() {
     // Modification de la margin au dessus du header
     const header = document.querySelector("header");
     header.style.marginTop = "109px";
-    
+
     // Modification de la margin sous le h2 'Mes Projets' 
     const portfolioTitle = document.querySelector(".portfolioTitle");
     portfolioTitle.style.marginBottom = "90px";
@@ -169,67 +168,67 @@ function adminDisplay() {
     portfolioTitle.appendChild(boutonEdit)
 }
 
-// Fonction pour créer la fenêtre modale
-function createModal() {
-    let modal = null
+// Fenêtre modale
 
-    // fonction pour ouvrir la modale
-    const openModal = function (e) {
-        e.preventDefault();
-        modal = document.querySelector(e.target.getAttribute("href"));
-        previouslyFocusedElement = document.querySelector(':focus');
-        modal.style.display = null;
-        modal.removeAttribute("aria-hidden");
-        modal.setAttribute("aria-modal", "true");
-        modal.addEventListener("click", closeModal);
-        modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
-        modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
-    };
+let modal = null
 
-    // fonction pour fermer la modale
-    const closeModal = function (e) {
-        if (modal === null) return; // si il n'y as pas de modale d'afficher la fonction s'arrête là 
-        if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
-
-        const modalContent1 = document.querySelector(".modalContent1");
-        const modalContent2 = document.querySelector(".modalContent2");
-        const arrowLeft = document.querySelector(".arrowLeft");
-
-        // On ajoute un timer de 300ms pour laisser l'animation de fermeture se jouer
-        window.setTimeout(function () {
-            modal.style.display = "none";
-            modal = null;
-            modalContent1.style.display = "flex";
-            modalContent2.style.display = "none";
-            arrowLeft.style.display = "none";
-            // Reset formulaire 
-            resetForm();
-        }, 300);
-
-        modal.setAttribute("aria-hidden", "true");
-        modal.removeAttribute("aria-modal");
-        modal.removeEventListener("click", closeModal);
-        modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
-        modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
-    };
-
-    // Fonction pour empêcher la propagation de l'évènement aux parents
-    const stopPropagation = function (e) {
-        e.stopPropagation();
-    };
-
-    // Ajout d'un event listener pour ouvrir la modale 
-    document.querySelectorAll(".js-modal").forEach((a) => {
-        a.addEventListener("click", openModal);
-    });
-
-    // Gestion de la touche 'echap' pour fermer la modale
-    window.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" || e.key === "Esc") {
-            closeModal(e);
-        };
-    });
+// fonction pour ouvrir la modale
+const openModal = function (e) {
+    e.preventDefault();
+    modal = document.querySelector(e.target.getAttribute("href"));
+    previouslyFocusedElement = document.querySelector(':focus');
+    modal.style.display = null;
+    modal.removeAttribute("aria-hidden");
+    modal.setAttribute("aria-modal", "true");
+    modal.addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").addEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").addEventListener("click", stopPropagation);
 };
+
+// fonction pour fermer la modale
+const closeModal = function (e) {
+    if (modal === null) return; // si il n'y as pas de modale d'afficher la fonction s'arrête là 
+    if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
+
+    const modalContent1 = document.querySelector(".modalContent1");
+    const modalContent2 = document.querySelector(".modalContent2");
+    const arrowLeft = document.querySelector(".arrowLeft");
+
+    // On ajoute un timer de 300ms pour laisser l'animation de fermeture se jouer
+    window.setTimeout(function () {
+        modal.style.display = "none";
+        modal = null;
+        modalContent1.style.display = "flex";
+        modalContent2.style.display = "none";
+        arrowLeft.style.display = "none";
+        // Reset formulaire 
+        resetForm();
+    }, 300);
+
+    modal.setAttribute("aria-hidden", "true");
+    modal.removeAttribute("aria-modal");
+    modal.removeEventListener("click", closeModal);
+    modal.querySelector(".js-modal-close").removeEventListener("click", closeModal);
+    modal.querySelector(".js-modal-stop").removeEventListener("click", stopPropagation);
+};
+
+// Fonction pour empêcher la propagation de l'évènement aux parents
+const stopPropagation = function (e) {
+    e.stopPropagation();
+};
+
+// Ajout d'un event listener pour ouvrir la modale 
+document.querySelectorAll(".js-modal").forEach((a) => {
+    a.addEventListener("click", openModal);
+});
+
+// Gestion de la touche 'echap' pour fermer la modale
+window.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" || e.key === "Esc") {
+        closeModal(e);
+    };
+});
+
 
 // Fonction pour supprimer un projet
 async function deleteWorks(workId) {
